@@ -5,5 +5,5 @@ case class RichConditionInfo( tipe:java.lang.String,
                          args:List[String]){
 
 
-  override def toString = "\n " + tipe + args.mkString(" ")
+  override def toString =   tipe + args.mkString(" ")
 }

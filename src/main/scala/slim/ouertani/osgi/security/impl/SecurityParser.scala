@@ -6,7 +6,7 @@ import scala.util.parsing.combinator._
 
 
 object SecurityTree extends SecurityParser {
-  def read(s:String) = parse(conditionalPermissionInfos, s) get
+  def read(s:String):List[RichConditionalPermissionInfo] = parse(conditionalPermissionInfos, s) get
 }
 
 class SecurityParser extends JavaTokenParsers {
