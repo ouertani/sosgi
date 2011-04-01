@@ -1,4 +1,0 @@
-#Source Dependencies
-#Tue Mar 29 19:15:38 CEST 2011
-src_managed/bnd4sbt-1.0.0/properties.scala=src_managed/bnd4sbt-1.0.0/BNDPlugin.scala
-src_managed/bnd4sbt-1.0.0/BNDPlugin.scala=
