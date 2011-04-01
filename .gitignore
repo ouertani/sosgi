@@ -4,6 +4,8 @@ lib_managed
 src_managed
 boot
 project/plugins/project
+project/build/target
+
 
 # Maven
 target
