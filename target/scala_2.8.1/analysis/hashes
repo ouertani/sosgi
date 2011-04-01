@@ -1,2 +1,11 @@
 #Source Hashes
-#Fri Apr 01 14:49:53 CEST 2011
+#Fri Apr 01 18:15:40 CEST 2011
+src/main/scala/slim/ouertani/osgi/security/impl/RichPermissionInfo.scala=dcab06bf9bf126c1a0959ebeb5beccf17d94c4bb
+src/main/scala/slim/ouertani/osgi/security/impl/SecurityCommandProvider.scala=84d6e3d523db3447c5be4d1d2fa6637275f3e855
+src/main/scala/slim/ouertani/osgi/security/impl/RichConditionInfo.scala=895bf50cac2b181e853588728c1e018d3eeccabf
+src/main/scala/slim/ouertani/osgi/security/Activatoro.scala=4a657ffdc17b851f24fbc4ce891b6597381d577c
+src/main/scala/slim/ouertani/osgi/security/BundleNameCondition.scala=6255432fb201c8eac9bb729fb7fdaddd27a0d004
+src/main/scala/slim/ouertani/osgi/security/Activator.scala=326b93208c9fbd6b78eb535bc6b6f455499790dc
+src/main/scala/slim/ouertani/osgi/security/impl/RichAccessDecision.scala=5aaaae9e09bea61fcfa7f2e72396a9e664b0d109
+src/main/scala/slim/ouertani/osgi/security/impl/SecurityParser.scala=d8b86684173cfbd651e87419d046b42abcd3940c
+src/main/scala/slim/ouertani/osgi/security/impl/RichConditionalPermissionInfo.scala=d32cf1d649b93e5ce1de6f33c4379d592ddb26dc
