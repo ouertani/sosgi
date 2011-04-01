@@ -1,0 +1,7 @@
+#External Dependencies
+#Tue Mar 29 19:15:38 CEST 2011
+/opt/jdk1.6.0_23/jre/lib/rt.jar=src_managed/bnd4sbt-1.0.0/BNDPlugin.scala\:src_managed/bnd4sbt-1.0.0/properties.scala
+/home/slim/dev/git/sosgi/project/boot/scala-2.7.7/lib/scala-library.jar=src_managed/bnd4sbt-1.0.0/BNDPlugin.scala\:src_managed/bnd4sbt-1.0.0/properties.scala
+/home/slim/dev/git/sosgi/project/boot/scala-2.7.7/org.scala-tools.sbt/sbt/0.7.4/sbt_2.7.7-0.7.4.jar=src_managed/bnd4sbt-1.0.0/BNDPlugin.scala\:src_managed/bnd4sbt-1.0.0/properties.scala
+/home/slim/dev/git/sosgi/project/boot/scala-2.7.7/org.scala-tools.sbt/sbt/0.7.4/ivy_2.7.7-0.7.4.jar=src_managed/bnd4sbt-1.0.0/properties.scala
+/home/slim/dev/git/sosgi/project/plugins/lib_managed/scala_2.7.7/bndlib-0.0.384.jar=src_managed/bnd4sbt-1.0.0/BNDPlugin.scala
