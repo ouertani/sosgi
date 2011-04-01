@@ -24,7 +24,7 @@ class SosgiProject(info: ProjectInfo) extends DefaultProject(info) with BNDPlugi
   
   val osgi = "org.osgi" % "org.osgi.core" % "4.2.0"
   val osgiCompendium ="org.osgi" % "org.osgi.compendium" % "4.2.0"
-  val eclipseOsgi = "org.eclipse" % "osgi" % "3.5.0.v20090522"
+  val eclipseOsgi = "org.eclipse" % "osgi" % "3.5.0.v20090520"
 
 
    // ===================================================================================================================

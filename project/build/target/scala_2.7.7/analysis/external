@@ -1,5 +1,5 @@
 #External Dependencies
-#Fri Apr 01 14:49:48 CEST 2011
+#Fri Apr 01 17:17:28 CEST 2011
 /home/slim/dev/git/sosgi/project/plugins/target/scala_2.7.7/plugin-classes/com/weiglewilczek/bnd4sbt/BNDPlugin$class.class=ScalaModulesProject.scala
 /home/slim/dev/git/sosgi/project/boot/scala-2.7.7/org.scala-tools.sbt/sbt/0.7.4/ivy_2.7.7-0.7.4.jar=ScalaModulesProject.scala
 /home/slim/dev/git/sosgi/project/plugins/target/scala_2.7.7/plugin-classes/com/weiglewilczek/bnd4sbt/BNDPluginProperties.class=ScalaModulesProject.scala
