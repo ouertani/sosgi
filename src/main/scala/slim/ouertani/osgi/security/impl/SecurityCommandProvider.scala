@@ -15,16 +15,19 @@ import scala.util.parsing.combinator._
 class SecurityCommandProvider(context: BundleContext) extends CommandProvider  with Logging {
 
 
-  private [this] def echo {
-    context findService withInterface[ConditionalPermissionAdmin]  andApply { printConds _
+  private [this] def play(f : ConditionalPermissionAdmin=>Unit){
+    context findService withInterface[ConditionalPermissionAdmin]  andApply {
+      (cpa, props) =>  f(cpa)
     }
   }
-  private [this] def clear {
 
-    logger debug "clear security"
-    
-    context findService withInterface[ConditionalPermissionAdmin]  andApply {
-      (cpa, props) => {
+  private [this] def echo(cpa : ConditionalPermissionAdmin) {
+    val conds =cpa.newConditionalPermissionUpdate().getConditionalPermissionInfos().asInstanceOf[java.util.List[ConditionalPermissionInfo]]
+    println(SecurityTree read  conds.mkString    )
+  }
+
+
+  private [this] def clear(cpa : ConditionalPermissionAdmin) {
         try {
           val ncpu=  cpa.newConditionalPermissionUpdate()
           ncpu.getConditionalPermissionInfos().asInstanceOf[java.util.List[ConditionalPermissionInfo]].clear
@@ -35,27 +38,18 @@ class SecurityCommandProvider(context: BundleContext) extends CommandProvider  w
         }catch {
           case e => logger error e.getMessage
         }
-
-
-      }
-    }
   }
 
 
-  private [this] def init {
-  
-    context findService withInterface[ConditionalPermissionAdmin]  andApply {
-      (cpa, props) => {
-        //"""ALLOW { [ BundleLocationCondition "*" ]( java.lang.RuntimePermission "*" )}"""
-        updateSecurity(cpa,"""ALLOW {
+  private [this] def init(cpa : ConditionalPermissionAdmin) {
+
+        updateSecurity("""ALLOW {
 [ org.osgi.service.condpermadmin.BundleLocationCondition "*/admin/*" ]
 (org.osgi.framework.ServicePermission "org.eclipse.osgi.framework.console.CommandProvider" "register")
 (java.security.AllPermission "*" "*"  )
 (org.osgi.framework.AdminPermission  "*" "*")
 (org.osgi.framework.PackagePermission "*"  "*")
-}""") }
-      println ("security has been add")
-    }
+}""") (cpa)
   }
 
 
@@ -65,18 +59,18 @@ class SecurityCommandProvider(context: BundleContext) extends CommandProvider  w
   }
   
 
-  private[this]  def updateSecurity(cpa :ConditionalPermissionAdmin, s :String *) {
+  private[this]  def updateSecurity( s :String )(cpa :ConditionalPermissionAdmin) {
     try {
       val ncpu=  cpa.newConditionalPermissionUpdate()
-      s.foreach { ss =>
-        val info = cpa.newConditionalPermissionInfo(ss)       
+      
+        val info = cpa.newConditionalPermissionInfo(s)       
         val conds:java.util.List[ConditionalPermissionInfo] =ncpu.getConditionalPermissionInfos().asInstanceOf[java.util.List[ConditionalPermissionInfo]]
-        var copy:java.util.List[ConditionalPermissionInfo] = new java.util.ArrayList[ConditionalPermissionInfo]()
+        var copy = new java.util.ArrayList[ConditionalPermissionInfo]()
         copy.addAll(conds)      
         conds.clear
         conds.add(info)
         conds.addAll(copy)
-      }
+      
      
       commit( ncpu )
     } catch {
@@ -86,23 +80,9 @@ class SecurityCommandProvider(context: BundleContext) extends CommandProvider  w
 
   }
 
-  private[this] def printConds(cpa :ConditionalPermissionAdmin){
-    val conds:java.util.List[ConditionalPermissionInfo] =cpa.newConditionalPermissionUpdate().getConditionalPermissionInfos().asInstanceOf[java.util.List[ConditionalPermissionInfo]]
-   
-    var c =""
-    conds.map( t => c+= t.toString)   
-  
-   
-    println(SecurityTree read c)
-  
-
-   
-   
-  }
   private [this] def query(bundleId:String, order :String , permission : String )={
-    val bundle =  context.getBundle(bundleId.toInt)
-    //"""ALLOW { [ BundleLocationCondition "*" ]( java.lang.RuntimePermission "*" )}"""
-    order + """{ [ org.osgi.service.condpermadmin.BundleLocationCondition """" +bundle.getLocation + """" ] """ + permission +"""}"""
+    val l  =  context.getBundle(bundleId.toInt).getLocation
+    order + """{ [ org.osgi.service.condpermadmin.BundleLocationCondition """" +l + """" ] """ + permission +"""}"""
   }
 
   private var _ci:CommandInterpreter=_
@@ -124,13 +104,14 @@ class SecurityCommandProvider(context: BundleContext) extends CommandProvider  w
     val permission = p.reverse.mkString(" ")
     println (permission)
     cmd match {
-      case "+" =>   context findService withInterface[ConditionalPermissionAdmin]  andApply {  updateSecurity(_, query(bundleId,"ALLOW",permission))}
-      case "-" =>   context findService withInterface[ConditionalPermissionAdmin]  andApply   {  updateSecurity(_, query(bundleId,"DENY",permission))  }
-      case "!" => init
-      case "!!" => clear
-      case "?" => echo
-      case _ => println ("exception")
-    
+      case "+" =>  play( updateSecurity (query(bundleId,"ALLOW",permission)) )
+      case "-" =>  play (updateSecurity (query(bundleId,"DENY",permission)) )
+      case "!" => play(init)
+      case "!!" => play (clear)
+      case "?" => play (echo)
+      case _ => getHelp
+
+
     }
 
   }
