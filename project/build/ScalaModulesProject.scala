@@ -41,7 +41,7 @@ class SosgiProject(info: ProjectInfo) extends DefaultProject(info) with BNDPlugi
   override def bndExportPackage =
     "slim.ouertani.osgi.security;version=\"%s\"".format(projectVersion.value) :: Nil
  // override def bndVersionPolicy = Some("[$(@),$(version;=+;$(@)))")
-   override def bndBundleActivator=Some("slim.ouertani.osgi.security.Activator")
+   override def bndBundleActivator=Some("slim.ouertani.osgi.security.impl.Activator")
   override def compileOptions = super.compileOptions ++ compileOptions("-Xelide-below", "-1")
 
 

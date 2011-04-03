@@ -27,28 +27,35 @@ class SecurityCommandProvider(context: BundleContext) extends CommandProvider  w
 
 
   private [this] def clear(cpa : ConditionalPermissionAdmin) {
-        try {
-          val ncpu=  cpa.newConditionalPermissionUpdate()
-          ncpu.getConditionalPermissionInfos().asInstanceOf[java.util.List[ConditionalPermissionInfo]].clear
-          ncpu.commit match {
-            case true =>   logger info "Security operation OK"
-            case false => logger error "Security operation KO"
-          }
-        }catch {
-          case e => logger error e.getMessage
-        }
+    try {
+      val ncpu=  cpa.newConditionalPermissionUpdate()
+      ncpu.getConditionalPermissionInfos().asInstanceOf[java.util.List[ConditionalPermissionInfo]].clear
+      ncpu.commit match {
+        case true =>   logger info "Security operation OK"
+        case false => logger error "Security operation KO"
+      }
+    }catch {
+      case e => logger error e.getMessage
+    }
   }
 
 
   private [this] def init(cpa : ConditionalPermissionAdmin) {
 
-        updateSecurity("""ALLOW {
-[ org.osgi.service.condpermadmin.BundleLocationCondition "*/admin/*" ]
+    val d = context  getProperty("ADMIN_DIR") match {
+      case s:String => s
+      case _ =>  "*/admin/*"
+    }
+
+    val initQ="""ALLOW {
+[ org.osgi.service.condpermadmin.BundleLocationCondition """"  +d +"""" ]
 (org.osgi.framework.ServicePermission "org.eclipse.osgi.framework.console.CommandProvider" "register")
 (java.security.AllPermission "*" "*"  )
 (org.osgi.framework.AdminPermission  "*" "*")
 (org.osgi.framework.PackagePermission "*"  "*")
-}""") (cpa)
+}"""
+   
+    updateSecurity(initQ) (cpa)
   }
 
 
@@ -60,16 +67,15 @@ class SecurityCommandProvider(context: BundleContext) extends CommandProvider  w
 
   private[this]  def updateSecurity( s :String )(cpa :ConditionalPermissionAdmin) {
     try {
-      val ncpu=  cpa.newConditionalPermissionUpdate()
-      
-        val info = cpa.newConditionalPermissionInfo(s)       
-        val conds =ncpu.getConditionalPermissionInfos().asInstanceOf[java.util.List[ConditionalPermissionInfo]]
-        var copy = new java.util.ArrayList[ConditionalPermissionInfo]()
-        copy.addAll(conds)      
-        conds.clear
-        conds.add(info)
-        conds.addAll(copy)
-        commit( ncpu )
+      val ncpu=  cpa.newConditionalPermissionUpdate()      
+      val info = cpa.newConditionalPermissionInfo(s)
+      val conds =ncpu.getConditionalPermissionInfos().asInstanceOf[java.util.List[ConditionalPermissionInfo]]
+      var copy = new java.util.ArrayList[ConditionalPermissionInfo]()
+      copy.addAll(conds)
+      conds.clear
+      conds.add(info)
+      conds.addAll(copy)
+      commit( ncpu )
     } catch {
       case e => logger error e.getMessage
     }

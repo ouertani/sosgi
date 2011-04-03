@@ -126,7 +126,7 @@
                         <Export-Package>slim.ouertani.osgi.security.*</Export-Package>
                        <!-- <Include-Resource>src/main/resources</Include-Resource> -->
                         <Private-Package>slim.ouertani.osgi.security.*</Private-Package>
-                        <Bundle-Activator>slim.ouertani.osgi.security.Activator</Bundle-Activator>
+                        <Bundle-Activator>slim.ouertani.osgi.security.impl.Activator</Bundle-Activator>
                     </instructions>
                 </configuration>
             </plugin>
