@@ -1,4 +1,3 @@
-
 package slim.ouertani.osgi.security.impl
 
 import org.eclipse.osgi.framework.console.CommandInterpreter
@@ -111,7 +110,7 @@ class SecurityCommandProvider(context: BundleContext) extends CommandProvider  w
     }
 
   }
-  override  def getHelp():String = {
+  override  def getHelp()= {
     println ("---Security Command Interpreter---")
     val s= new StringBuilder();
     s.append("\tsosgi + - Allow security\n ")
@@ -120,9 +119,7 @@ class SecurityCommandProvider(context: BundleContext) extends CommandProvider  w
     s.append("\tsosgi ? - Echo security FWK\n ")
     s.append("\tsosgi ! - Init security FWK\n ")
    
-    return s.toString;
-
-    
+    s.toString;
   }
 
 

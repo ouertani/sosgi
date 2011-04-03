@@ -1,4 +1,3 @@
-
 package slim.ouertani.osgi.security.impl
 
 sealed abstract class RichAccessDecision

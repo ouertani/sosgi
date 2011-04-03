@@ -1,4 +1,3 @@
-
 package slim.ouertani.osgi.security.impl
 
 case class RichPermissionInfoDetails( tipe: String, name: Option[String], actions:Option[String]) {

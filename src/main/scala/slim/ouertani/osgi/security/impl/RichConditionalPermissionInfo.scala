@@ -1,5 +1,3 @@
-
-
 package slim.ouertani.osgi.security.impl
 
 

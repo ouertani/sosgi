@@ -1,12 +1,9 @@
-
-
 package slim.ouertani.osgi.security
 
 
 
 import com.weiglewilczek.slf4s.Logging
 import com.weiglewilczek.scalamodules._
-
 import org.osgi.framework.{ BundleActivator, BundleContext }
 import impl._
 
