@@ -22,3 +22,7 @@ case class RichConditionalPermissionInfo(accessDecision:RichAccessDecision,
                          ligne1
 
 }
+
+case class RichConditionalPermissionInfos( richConditionalPermissionInfos: List[RichConditionalPermissionInfo]) {
+  override def toString =  richConditionalPermissionInfos.mkString(" AND \n")
+}

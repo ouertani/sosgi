@@ -124,7 +124,7 @@ class SecurityCommandProvider(context: BundleContext) extends CommandProvider  w
       }
      
       commit( ncpu )
-    }catch {
+    } catch {
       case e => logger error e.getMessage
     }
 
