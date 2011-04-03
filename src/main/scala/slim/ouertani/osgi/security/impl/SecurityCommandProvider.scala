@@ -139,7 +139,7 @@ class SecurityCommandProvider(context: BundleContext) extends CommandProvider  w
   
    
     println(SecurityTree read c)
-
+  println
 
    
    
@@ -169,11 +169,11 @@ class SecurityCommandProvider(context: BundleContext) extends CommandProvider  w
     val permission = p.reverse.mkString(" ")
     println (permission)
     cmd match {
-      case "allow" =>   context findService withInterface[ConditionalPermissionAdmin]  andApply {  updateSecurity(_, query(bundleId,"ALLOW",permission))}
-      case "deny" =>   context findService withInterface[ConditionalPermissionAdmin]  andApply   {  updateSecurity(_, query(bundleId,"DENY",permission))  }
-      case "init" => init2
-      case "clear" => clear
-      case "echo" => echo
+      case "+" =>   context findService withInterface[ConditionalPermissionAdmin]  andApply {  updateSecurity(_, query(bundleId,"ALLOW",permission))}
+      case "-" =>   context findService withInterface[ConditionalPermissionAdmin]  andApply   {  updateSecurity(_, query(bundleId,"DENY",permission))  }
+      case "!" => init2
+      case "!!" => clear
+      case "?" => echo
       case _ => println ("exception")
     
     }

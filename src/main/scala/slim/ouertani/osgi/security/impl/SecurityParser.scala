@@ -21,8 +21,8 @@ val qname : Parser[String]= ("""([^"\p{Cntrl}\\]|\\[\\/bfnrt]|\\u[a-fA-F0-9]{4})
   def acces: Parser[RichAccessDecision] =  (
     "ALLOW"  ^^ (x => AllowAccessDecision)
     | "allow" ^^   (x => AllowAccessDecision)
-    | "DENY" ^^   (x => AllowAccessDecision)
-    | "deny" ^^  (x =>  AllowAccessDecision)
+    | "DENY" ^^   (x => DenyAccessDecision)
+    | "deny" ^^  (x =>  DenyAccessDecision)
   )
 
 
