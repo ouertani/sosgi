@@ -64,15 +64,13 @@ class SecurityCommandProvider(context: BundleContext) extends CommandProvider  w
       val ncpu=  cpa.newConditionalPermissionUpdate()
       
         val info = cpa.newConditionalPermissionInfo(s)       
-        val conds:java.util.List[ConditionalPermissionInfo] =ncpu.getConditionalPermissionInfos().asInstanceOf[java.util.List[ConditionalPermissionInfo]]
+        val conds =ncpu.getConditionalPermissionInfos().asInstanceOf[java.util.List[ConditionalPermissionInfo]]
         var copy = new java.util.ArrayList[ConditionalPermissionInfo]()
         copy.addAll(conds)      
         conds.clear
         conds.add(info)
         conds.addAll(copy)
-      
-     
-      commit( ncpu )
+        commit( ncpu )
     } catch {
       case e => logger error e.getMessage
     }
@@ -86,7 +84,7 @@ class SecurityCommandProvider(context: BundleContext) extends CommandProvider  w
   }
 
   private var _ci:CommandInterpreter=_
-  def println(a:Any="\n") {
+  private [this] def println(a:Any="\n") {
     if(_ci != null)
       _ci print a + "\n"
     else logger.info(""+a)
@@ -102,7 +100,7 @@ class SecurityCommandProvider(context: BundleContext) extends CommandProvider  w
       a=ci.nextArgument()
     }
     val permission = p.reverse.mkString(" ")
-    println (permission)
+    
     cmd match {
       case "+" =>  play( updateSecurity (query(bundleId,"ALLOW",permission)) )
       case "-" =>  play (updateSecurity (query(bundleId,"DENY",permission)) )
@@ -110,8 +108,6 @@ class SecurityCommandProvider(context: BundleContext) extends CommandProvider  w
       case "!!" => play (clear)
       case "?" => play (echo)
       case _ => getHelp
-
-
     }
 
   }
