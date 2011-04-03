@@ -41,64 +41,19 @@ class SecurityCommandProvider(context: BundleContext) extends CommandProvider  w
     }
   }
 
+
   private [this] def init {
-    println (context.getBundle.getLocation)
-
-    val sec1= """ALLOW {
-[ org.osgi.service.condpermadmin.BundleLocationCondition """" +context.getBundle.getLocation+""""  ]
-(org.osgi.framework.ServicePermission "org.eclipse.osgi.framework.console.CommandProvider" "register")
-( java.security.AllPermission "*" "*"  )
-(org.osgi.framework.AdminPermission  "*" "*")
-(org.osgi.framework.PackagePermission "*"  "*")
-}""";
-
-    def buildAllows(s:String) = """ALLOW {
-[ org.osgi.service.condpermadmin.BundleLocationCondition """" +s+""""  ]
-(org.osgi.framework.ServicePermission, "org.osgi.service.condpermadmin.ConditionalPermissionAdmin", "*")
-(org.osgi.framework.ServicePermission, "org.osgi.service.permissionadmin.PermissionAdmin", "*")
-(org.osgi.framework.ServicePermission, "org.osgi.service.framework.CompositeBundleFactory", "*")
-(org.osgi.framework.ServicePermission, "org.osgi.framework.hooks.service.*", "*")
-(org.osgi.framework.ServicePermission, "org.osgi.service.packageadmin.PackageAdmin", "*")
-(org.osgi.framework.PackagePermission, "*", "import")
-(org.osgi.framework.BundlePermission, "*", "host,provide,fragment")
-(java.lang.RuntimePermission, "loadLibrary.*", "*")
-(java.lang.RuntimePermission, "queuePrintJob", "*")
-(java.net.SocketPermission, "*", "connect")
-(java.util.PropertyPermission, "*", "read")
-(org.osgi.framework.PackagePermission, "*", "exportonly,import")
-(org.osgi.framework.ServicePermission, "*", "get,register")
-}""";
-    var s:String=""
-    context.getBundles.filter(_.getBundleId != 0).map(x=> { println (x.getBundleId) ;s+=buildAllows(x.getLocation)})
-
-
-    println (s)
-     context findService withInterface[ConditionalPermissionAdmin]  andApply {
-      (cpa, props) => {
-        updateSecurity(cpa,s)
-      }
-   
-     }
-  }
-
-
-  private [this] def init2 {
-    //val init ="""  ALLOW { [  BundleLocationCondition " """ +context.getBundle.getLocation+  """ " ]( java.security.AllPermission "*" "*" )}"""
+  
     context findService withInterface[ConditionalPermissionAdmin]  andApply {
       (cpa, props) => {
         //"""ALLOW { [ BundleLocationCondition "*" ]( java.lang.RuntimePermission "*" )}"""
         updateSecurity(cpa,"""ALLOW {
-[ org.osgi.service.condpermadmin.BundleLocationCondition "*/scala_2.8.1/*" ]
+[ org.osgi.service.condpermadmin.BundleLocationCondition "*/admin/*" ]
 (org.osgi.framework.ServicePermission "org.eclipse.osgi.framework.console.CommandProvider" "register")
-( java.security.AllPermission "*" "*"  )
+(java.security.AllPermission "*" "*"  )
 (org.osgi.framework.AdminPermission  "*" "*")
 (org.osgi.framework.PackagePermission "*"  "*")
-}""",
-                       """ALLOW {
-[ org.osgi.service.condpermadmin.BundleLocationCondition "*" ]
-  (org.osgi.framework.PackagePermission "*" "import,exportonly")
-}""")
-      }
+}""") }
       println ("security has been add")
     }
   }
@@ -139,7 +94,7 @@ class SecurityCommandProvider(context: BundleContext) extends CommandProvider  w
   
    
     println(SecurityTree read c)
-  println
+  
 
    
    
@@ -151,11 +106,11 @@ class SecurityCommandProvider(context: BundleContext) extends CommandProvider  w
   }
 
   private var _ci:CommandInterpreter=_
-//  def println(a:Any) {
-//    if(_ci != null)
-//      _ci print a + "\n"
-//    else logger.info(""+a)
-//  }
+  def println(a:Any="\n") {
+    if(_ci != null)
+      _ci print a + "\n"
+    else logger.info(""+a)
+  }
   def  _sosgi( ci:CommandInterpreter)  {
     _ci =ci
     val cmd = ci.nextArgument()
@@ -171,7 +126,7 @@ class SecurityCommandProvider(context: BundleContext) extends CommandProvider  w
     cmd match {
       case "+" =>   context findService withInterface[ConditionalPermissionAdmin]  andApply {  updateSecurity(_, query(bundleId,"ALLOW",permission))}
       case "-" =>   context findService withInterface[ConditionalPermissionAdmin]  andApply   {  updateSecurity(_, query(bundleId,"DENY",permission))  }
-      case "!" => init2
+      case "!" => init
       case "!!" => clear
       case "?" => echo
       case _ => println ("exception")
@@ -182,11 +137,11 @@ class SecurityCommandProvider(context: BundleContext) extends CommandProvider  w
   override  def getHelp():String = {
     println ("---Security Command Interpreter---")
     val s= new StringBuilder();
-    s.append("\tsosgi allow - Allow security\n ")    
-    s.append("\tsosgi clear - Clear security FWK\n ")
-    s.append("\tsosgi deny - Deny security\n ")
-    s.append("\tsosgi echo - Echo security FWK\n ")
-    s.append("\tsosgi init - Init security FWK\n ")
+    s.append("\tsosgi + - Allow security\n ")
+    s.append("\tsosgi !! - Clear security FWK\n ")
+    s.append("\tsosgi - - Deny security\n ")
+    s.append("\tsosgi ? - Echo security FWK\n ")
+    s.append("\tsosgi ! - Init security FWK\n ")
    
     return s.toString;
 
