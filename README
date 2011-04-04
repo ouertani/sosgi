@@ -1,0 +1,154 @@
+Osgi, security on the fly
+
+Recently, I got a question on how to disallow bundles to call System.exit method and shutdown the full system. 
+
+The first solution is to do as an old static java applications :
+
+1 - delegate security to osgi framework :
+java -jar framework.jar -init -Djava.security.manager -Djava.security.policy=all.policy
+
+all.policy
+grant { permission java.security.AllPermission; 
+      };
+
+
+2 - deny all exit method call using java security api and deploy it using single bundle with an activator like :
+
+import org.osgi.framework. {BundleActivator ,BundleContext }
+
+
+class Activator extends   BundleActivator {
+  @throws (classOf[ java.lang.Exception])
+  def start( context:BundleContext){
+  System setSecurityManager new SecurityManager() {
+            override def checkExit( status:Int) {               
+                throw new SecurityException("Reject System.exit(" + status + ")!");
+            }
+        }
+  }
+  @throws (classOf[ java.lang.Exception])
+  def stop( context:BundleContext) {}
+}
+
+
+This blog will show how to change security permission per bundle on the fly using console.
+
+
+Osgi is more flexible than standard java applications and security inside osgi is not an exception. Using Conditional Permission Admin make security more dynamic. 
+
+to enable security on the fly a will use sosgi scala modules. 
+
+while this bundle is under development, We can do many thing with it.
+
+Prerequisite :
+
+- scala-library-2.8.1.jar  -> scala language based
+- scalamodules-core_2.8.1-2.0.4-SNAPSHOT.jar  -> clever osgi dsl
+- slf4s_2.8.1-1.0.3.jar   -> scala logging dsl
+- slf4j-api-1.6.1.jar with implementation as slf4j-simple-1.6.1.jar -> logging facade and implementation
+- sbt-launch-0.7.4.jar -> to compile and package a bundle
+- org.eclipse.osgi_3.6.2.jar  -> curently base on equinox and its Command Interpreter
+
+installing :
+launch the framework using all.policy file as :
+java -Djava.security.manager -Djava.security.policy=all.policy -jar org.eclipse.osgi_3.6.2.R36x_v20110210.jar -console
+install base bundles like :
+
+i file:./admin/scala-library-2.8.1.jar
+i file:./admin/slf4j-api-1.6.1.jar
+i file:./admin/slf4j-simple-1.6.1.jar
+i file:./admin/slf4s_2.8.1-1.0.3.jar  
+i file:./admin/scalamodules-core_2.8.1-2.0.4-SNAPSHOT.jar
+i file:./admin/osgi_2.8.1-1.0.jar
+
+now for example install a  bundles to illustrate usage :
+
+class Activator extends   BundleActivator {
+  @throws (classOf[ java.lang.Exception])
+  def start( context:BundleContext){
+ 
+    try{
+     
+      System exit 0
+   
+    }catch {
+      case e => println  (e)
+    }
+
+  }
+.....
+
+supposse theses bundles have 7 
+
+
+running :
+
+1 - list bundles
+
+osgi> ss
+
+Framework is launched.
+
+id	State       Bundle
+0	ACTIVE      org.eclipse.osgi_3.6.2.R36x_v20110210
+1	INSTALLED   scala-library_2.8.1
+2	INSTALLED   slf4j.api_1.6.1
+3	INSTALLED   slf4j.simple_1.6.1
+4	INSTALLED   com.weiglewilczek.slf4s_1.0.3
+5	INSTALLED   com.weiglewilczek.scalamodules.core_2.0.4.SNAPSHOT
+6	INSTALLED   com.ouertani.osgi_1.0.0
+7	INSTALLED   com.osgi.1e_1.0.0.SNAPSHOT
+
+osgi> 
+
+
+2 - start security bundle 
+ start 6
+3 - update admin dir
+setprop ADMIN_DIR="*/admin/*"
+4- init security bundle
+sosgi !
+5- try to call start bundle 7
+start 7
+java.security.AccessControlException: access denied (java.lang.RuntimePermission exitVM.0)
+great system.exit is not allowed for this bundle
+
+6- to allow bundle 7 to call exit and shutdown the VM 
+sosgi + 7 ( java.lang.RuntimePermission ""exitVM.*"" )
+
+7- add permissions to bundle 7
+
+
+sosgi + 7 (  org.osgi.framework.PackagePermission ""*"" ""import"" )
+sosgi + 7 ( java.lang.RuntimePermission ""exitVM.*"" )
+
+8- start bundle 7 or update it 
+start 7
+great ! VM is shuting down
+
+More :
+
+display security
+
+sosgi ?
+
+
+FOR 
++ [generated_1301865364030] 
+If 
+	org.osgi.service.condpermadmin.BundleLocationCondition */admin/*
+Then  
+		org.osgi.framework.ServicePermission  org.eclipse.osgi.framework.console.CommandProvider register  AND 
+ 		java.security.AllPermission  * *  AND 
+ 		org.osgi.framework.AdminPermission  * *  AND 
+ 		org.osgi.framework.PackagePermission  * * 
+END FI
+
+clear all security
+
+sosgi !!
+ 
+
+
+
+
