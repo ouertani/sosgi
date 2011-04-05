@@ -7,6 +7,7 @@ import org.osgi.service.condpermadmin.ConditionalPermissionAdmin
 import org.osgi.service.condpermadmin.ConditionalPermissionInfo
 import org.osgi.service.condpermadmin.ConditionalPermissionUpdate
 import com.weiglewilczek.slf4s.Logging
+
 import scala.collection.JavaConversions._
 import scala.util.parsing.combinator._
 import com.weiglewilczek.scalamodules._

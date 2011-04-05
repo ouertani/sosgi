@@ -15,7 +15,7 @@ class ParserSpec extends Specification {
     """simple imput shoud be converted" """ in {
 
       val src = read(simpleInput)
-      println (src)
+    
 
 
       val exp =RichConditionalPermissionInfos(
@@ -28,10 +28,9 @@ class ParserSpec extends Specification {
          ))
 
 
-      println ("------------")
-
-      println(exp)
-     src mustEqual exp
+   // DenyAccessDecision mustEqual src.richConditionalPermissionInfos(0).accessDecision
+     RichConditionInfo("type", List("args")).tipe mustEqual src.richConditionalPermissionInfos(0).richConditionInfos(0).tipe
+   // RichConditionInfo("type", List("args")) mustEqual src.richConditionalPermissionInfos(0).richConditionInfos(0)
     }
   }
 }
