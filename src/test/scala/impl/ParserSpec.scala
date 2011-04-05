@@ -32,9 +32,10 @@ class ParserSpec extends Specification {
     """"conditions two""" should {
      val input = """
 deny {
-[condition "jar"]
+[condition1 "jar"]
  (java.lang.RuntimePermission "*") } "id1"
-allow { [org.osgi.service.condpermadmin.BundleLocationCondition "*"]
+allow {
+[condition2 "*"]
 (org.osgi.framework.PackagePermission "*" "import,exportonly") } "id2"
 """
     """two condition imput shoud be converted" """ in {
@@ -46,12 +47,12 @@ allow { [org.osgi.service.condpermadmin.BundleLocationCondition "*"]
       val exp =RichConditionalPermissionInfos(
          List(
            RichConditionalPermissionInfo(DenyAccessDecision,
-                                         List(RichConditionInfo("condition", List("jar"))),
+                                         List(RichConditionInfo("condition1", List("jar"))),
                                          List(RichPermissionInfo("java.lang.RuntimePermission",Some(RichPermissionInfoDetails("*",None,None)))),
                                          "id1"
            ),
            RichConditionalPermissionInfo(AllowAccessDecision,
-                                         List(RichConditionInfo("org.osgi.service.condpermadmin.BundleLocationCondition", List("jar"))),
+                                         List(RichConditionInfo("condition2", List("*"))),
                                          List(RichPermissionInfo("org.osgi.framework.PackagePermission",Some(RichPermissionInfoDetails("*",Some("import,exportonly"),None)))),
                                          "id2"
            )
