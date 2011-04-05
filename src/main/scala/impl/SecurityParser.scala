@@ -26,7 +26,7 @@ object SecurityParser extends JavaTokenParsers {
 
 
   private [this]  def condition: Parser[RichConditionInfo]= "[" ~> qname ~ quotedStringSep <~ "]" ^^  {
-    case  qname ~ quotedStringSep  => RichConditionInfo(qname.trim,quotedStringSep)
+    case  x ~ y  => RichConditionInfo(x.trim,y)
   }
    private [this]  def permissionDetails: Parser[(RichPermissionInfoDetails)]  = quotedString ~ opt(quotedString) ~ opt(quotedString) ^^  {
     case  x ~ y ~ z => RichPermissionInfoDetails(x,y,z)
