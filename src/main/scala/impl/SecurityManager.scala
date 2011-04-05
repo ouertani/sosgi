@@ -1,32 +1,32 @@
-package slim.ouertani.osgi.security.impl
 
-import org.eclipse.osgi.framework.console.CommandInterpreter
-import org.eclipse.osgi.framework.console.CommandProvider
+package slim.ouertani.osgi.security
+package impl
+
 import org.osgi.framework.BundleContext
-import org.osgi.framework.Constants._
-import com.weiglewilczek.scalamodules._
-import com.weiglewilczek.slf4s.Logging
 import org.osgi.service.condpermadmin.ConditionalPermissionAdmin
 import org.osgi.service.condpermadmin.ConditionalPermissionInfo
 import org.osgi.service.condpermadmin.ConditionalPermissionUpdate
+import com.weiglewilczek.slf4s.Logging
 import scala.collection.JavaConversions._
 import scala.util.parsing.combinator._
-class SecurityCommandProvider(context: BundleContext) extends CommandProvider  with Logging {
+import com.weiglewilczek.scalamodules._
+
+object SecurityManager extends  Logging  {
 
 
-  private [this] def play(f : ConditionalPermissionAdmin=>Unit){
+  def play(f : ConditionalPermissionAdmin=>Unit)(implicit context:BundleContext ){
     context findService withInterface[ConditionalPermissionAdmin]  andApply {
       (cpa, props) =>  f(cpa)
     }
   }
 
-  private [this] def echo(cpa : ConditionalPermissionAdmin) {
+  def echo(cpa : ConditionalPermissionAdmin)(implicit context:BundleContext ) {
     val conds =cpa.newConditionalPermissionUpdate().getConditionalPermissionInfos().asInstanceOf[java.util.List[ConditionalPermissionInfo]]
-    println(SecurityTree read  conds.mkString    )
+    println(SecurityParser read  conds.mkString    )
   }
 
 
-  private [this] def clear(cpa : ConditionalPermissionAdmin) {
+ def clear(cpa : ConditionalPermissionAdmin)(implicit context:BundleContext ) {
     try {
       val ncpu=  cpa.newConditionalPermissionUpdate()
       ncpu.getConditionalPermissionInfos().asInstanceOf[java.util.List[ConditionalPermissionInfo]].clear
@@ -40,7 +40,7 @@ class SecurityCommandProvider(context: BundleContext) extends CommandProvider  w
   }
 
 
-  private [this] def init(cpa : ConditionalPermissionAdmin) {
+  def init(cpa : ConditionalPermissionAdmin) (implicit context:BundleContext ){
 
     val d = context  getProperty("ADMIN_DIR") match {
       case s:String => s
@@ -54,20 +54,20 @@ class SecurityCommandProvider(context: BundleContext) extends CommandProvider  w
 (org.osgi.framework.AdminPermission  "*" "*")
 (org.osgi.framework.PackagePermission "*"  "*")
 }"""
-   
+
     updateSecurity(initQ) (cpa)
   }
 
 
-  private[this] def commit (ncpu :ConditionalPermissionUpdate)=  ncpu.commit match {
+  def commit (ncpu :ConditionalPermissionUpdate)=  ncpu.commit match {
     case true =>  logger info "Security operation OK"
     case _ => logger error "Security operation KO"
   }
-  
 
-  private[this]  def updateSecurity( s :String )(cpa :ConditionalPermissionAdmin) {
+
+  def updateSecurity( s :String )(cpa :ConditionalPermissionAdmin) {
     try {
-      val ncpu=  cpa.newConditionalPermissionUpdate()      
+      val ncpu=  cpa.newConditionalPermissionUpdate()
       val info = cpa.newConditionalPermissionInfo(s)
       val conds =ncpu.getConditionalPermissionInfos().asInstanceOf[java.util.List[ConditionalPermissionInfo]]
       var copy = new java.util.ArrayList[ConditionalPermissionInfo]()
@@ -83,51 +83,8 @@ class SecurityCommandProvider(context: BundleContext) extends CommandProvider  w
 
   }
 
-  private [this] def query(bundleId:String, order :String , permission : String )={
+  def query(bundleId:String, order :String , permission : String )(implicit context:BundleContext )={
     val l  =  context.getBundle(bundleId.toInt).getLocation
     order + """{ [ org.osgi.service.condpermadmin.BundleLocationCondition """" +l + """" ] """ + permission +"""}"""
   }
-
-  private var _ci:CommandInterpreter=_
-  private [this] def println(a:Any="\n") {
-    if(_ci != null)
-      _ci print a + "\n"
-    else logger.info(""+a)
-  }
-  def  _sosgi( ci:CommandInterpreter)  {
-    _ci =ci
-    val cmd = ci.nextArgument()
-    val bundleId = ci.nextArgument()
-    var a = ci.nextArgument()
-    var p: List[String]=List()
-    while(a != null){    
-      p =a  :: p
-      a=ci.nextArgument()
-    }
-    val permission = p.reverse.mkString(" ")
-    
-    cmd match {
-      case "+" =>  play( updateSecurity (query(bundleId,"ALLOW",permission)) )
-      case "-" =>  play (updateSecurity (query(bundleId,"DENY",permission)) )
-      case "!" => play(init)
-      case "!!" => play (clear)
-      case "?" => play (echo)
-      case _ => getHelp
-    }
-
-  }
-  override  def getHelp()= {
-    println ("---Security Command Interpreter---")
-    val s= new StringBuilder();
-    s.append("\tsosgi + - Allow security\n ")
-    s.append("\tsosgi !! - Clear security FWK\n ")
-    s.append("\tsosgi - - Deny security\n ")
-    s.append("\tsosgi ? - Echo security FWK\n ")
-    s.append("\tsosgi ! - Init security FWK\n ")
-   
-    s.toString;
-  }
-
-
-
 }

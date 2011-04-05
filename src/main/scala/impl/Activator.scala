@@ -9,11 +9,12 @@ import org.osgi.framework.{ BundleActivator, BundleContext }
 
 class Activator  extends   BundleActivator with Logging {
 
+   
   @throws (classOf[ java.lang.Exception])
   def start( context:BundleContext){
     try {
-
-      context createService new SecurityCommandProvider(context) 
+      implicit val cotx=context
+      context createService new SecurityCommandProvider 
     }catch {
       case e => logger error (e.getMessage)
     }
